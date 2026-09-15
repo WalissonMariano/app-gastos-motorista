@@ -1,11 +1,11 @@
-const SESSION_KEY = "giro-session-token";
+const SESSION_KEY = "gastos-motorista-token";
 
 const CATEGORIES = {
   receita: [
-    { id: "corridas", label: "Corridas", icon: "🚗" },
-    { id: "entregas", label: "Entregas", icon: "📦" },
-    { id: "frete", label: "Frete", icon: "🚚" },
-    { id: "gorjeta", label: "Gorjeta", icon: "✨" },
+    { id: "frete-caminhao", label: "Frete caminhão", icon: "🚚" },
+    { id: "frete-fiorino", label: "Frete Fiorino", icon: "🚐" },
+    { id: "mudanca", label: "Mudança / carga", icon: "📦" },
+    { id: "diaria", label: "Diária", icon: "🗓️" },
     { id: "outros-in", label: "Outras receitas", icon: "💰" },
   ],
   despesa: [
@@ -38,18 +38,12 @@ const PERIODS = [
 const state = {
   view: "home",
   period: "mes",
-  driverId: "all",
   search: "",
   typeFilter: "all",
-  drivers: [],
   transactions: [],
   user: null,
   token: localStorage.getItem(SESSION_KEY) || "",
 };
-
-function isAdmin() {
-  return state.user?.role === "admin";
-}
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -68,10 +62,6 @@ function formatDate(iso) {
 
 function categoryOf(type, id) {
   return CATEGORIES[type].find((item) => item.id === id) || { label: id, icon: "•" };
-}
-
-function driverOf(id) {
-  return state.drivers.find((item) => item.id === id);
 }
 
 function startOfWeek(date) {
@@ -96,14 +86,12 @@ function visibleTransactions(options = {}) {
   const listFilters = options.listFilters ?? false;
   return state.transactions
     .filter((item) => inPeriod(item.date, state.period))
-    .filter((item) => state.driverId === "all" || item.driverId === state.driverId)
     .filter((item) => !listFilters || state.typeFilter === "all" || item.type === state.typeFilter)
     .filter((item) => {
       if (!listFilters || !state.search.trim()) return true;
       const query = state.search.trim().toLowerCase();
-      const driver = driverOf(item.driverId);
       const category = categoryOf(item.type, item.category);
-      return [item.description, driver?.name, category.label].some((value) =>
+      return [item.description, category.label].some((value) =>
         String(value || "").toLowerCase().includes(query)
       );
     })
@@ -143,17 +131,12 @@ async function api(url, options = {}) {
 
 function applyData(data) {
   state.user = data.user;
-  state.drivers = data.drivers;
   state.transactions = data.transactions;
-  if (!isAdmin() && state.user?.driverId) {
-    state.driverId = state.user.driverId;
-  }
 }
 
 function clearSession() {
   state.token = "";
   state.user = null;
-  state.drivers = [];
   state.transactions = [];
   localStorage.removeItem(SESSION_KEY);
 }
@@ -181,7 +164,6 @@ function showApp() {
   app.classList.remove("is-guest");
   document.getElementById("loginScreen").hidden = true;
   document.getElementById("workspace").hidden = false;
-  document.getElementById("driversTab").classList.toggle("is-hidden", !isAdmin());
   render();
 }
 
@@ -205,9 +187,8 @@ function openSheet(html) {
 
 function setHeader() {
   const titles = {
-    home: [state.user?.name || "Giro", isAdmin() ? "Resumo da frota" : "Meu caixa"],
+    home: [state.user?.name || "Gastos do Motorista", "Meu caixa"],
     lancamentos: ["Lançamentos", "Receitas e despesas"],
-    motoristas: ["Motoristas", "Equipe da frota"],
     relatorio: ["Relatório", "Visão do período"],
   };
   const [eyebrow, title] = titles[state.view];
@@ -217,29 +198,15 @@ function setHeader() {
     PERIODS.find((item) => item.id === state.period).label;
 }
 
-function driverChips() {
-  if (!isAdmin()) return "";
-  const items = [{ id: "all", name: "Todos" }, ...state.drivers];
-  return items
-    .map(
-      (item) => `
-        <button class="chip ${state.driverId === item.id ? "is-active" : ""}" data-driver="${item.id}" type="button">
-          ${item.name}
-        </button>`
-    )
-    .join("");
-}
-
 function transactionItem(item) {
   const category = categoryOf(item.type, item.category);
-  const driver = driverOf(item.driverId);
   const sign = item.type === "receita" ? "+" : "-";
   return `
     <button class="item" data-edit-tx="${item.id}" type="button">
       <span class="dot">${category.icon}</span>
       <div>
         <h3>${category.label}</h3>
-        <p>${driver?.name || "Sem motorista"} · ${formatDate(item.date)} · ${item.description || "Sem nota"}</p>
+        <p>${formatDate(item.date)} · ${item.description || "Sem nota"}</p>
       </div>
       <strong class="amount ${item.type === "receita" ? "in" : "out"}">${sign}${formatMoney(item.amount)}</strong>
     </button>`;
@@ -263,7 +230,6 @@ function renderHome() {
         <div class="kpi is-in"><span>Receitas</span><strong>${formatMoney(summary.receitas)}</strong></div>
         <div class="kpi is-out"><span>Despesas</span><strong>${formatMoney(summary.despesas)}</strong></div>
       </div>
-      <div class="chips" id="driverChips">${driverChips()}</div>
     </section>
     <div class="section-title">
       <strong>Últimos lançamentos</strong>
@@ -277,48 +243,15 @@ function renderHome() {
 function renderLancamentos() {
   const list = visibleTransactions({ listFilters: true });
   return `
-    <input class="search" id="searchInput" type="search" placeholder="Buscar por motorista, categoria ou nota" value="${state.search}" />
+    <input class="search" id="searchInput" type="search" placeholder="Buscar por categoria ou nota" value="${state.search}" />
     <div class="filters">
       <button class="chip ${state.typeFilter === "all" ? "is-active" : ""}" data-type="all" type="button">Todos</button>
       <button class="chip ${state.typeFilter === "receita" ? "is-active" : ""}" data-type="receita" type="button">Receitas</button>
       <button class="chip ${state.typeFilter === "despesa" ? "is-active" : ""}" data-type="despesa" type="button">Despesas</button>
     </div>
-    <div class="chips" id="driverChips">${driverChips()}</div>
     <section class="list">
       ${list.length ? list.map(transactionItem).join("") : `<div class="empty">Nada encontrado. Toque no + para lançar.</div>`}
     </section>
-  `;
-}
-
-function renderMotoristas() {
-  if (!state.drivers.length) {
-    return `<section class="card empty">Cadastre o primeiro motorista para começar.</section>`;
-  }
-
-  return `
-    <div class="driver-grid">
-      ${state.drivers
-        .map((driver) => {
-          const list = state.transactions.filter(
-            (item) => item.driverId === driver.id && inPeriod(item.date, state.period)
-          );
-          const summary = totals(list);
-          return `
-            <button class="card driver-card" data-edit-driver="${driver.id}" type="button">
-              <div class="driver-card__top">
-                <span class="avatar">${driver.name.slice(0, 1)}</span>
-                <strong class="amount ${summary.saldo >= 0 ? "in" : "out"}">${formatMoney(summary.saldo)}</strong>
-              </div>
-              <div>
-                <h3>${driver.name}</h3>
-                <p>${driver.vehicle} · ${driver.plate}</p>
-                <p>${formatMoney(summary.receitas)} entrada · ${formatMoney(summary.despesas)} saída</p>
-              </div>
-            </button>`;
-        })
-        .join("")}
-    </div>
-    ${isAdmin() ? `<button class="btn primary full" id="addDriverBtn" type="button">Novo motorista</button>` : ""}
   `;
 }
 
@@ -361,7 +294,6 @@ function renderRelatorio() {
     list.filter((item) => item.type === "despesa"),
     (item) => categoryOf(item.type, item.category).label
   );
-  const byDriver = groupBy(list, (item) => driverOf(item.driverId)?.name || "Sem motorista");
 
   return `
     <section class="hero">
@@ -376,24 +308,6 @@ function renderRelatorio() {
     <section class="list">${reportRows(byCategoryIn, "receitas") || `<div class="empty">Sem receitas no período.</div>`}</section>
     <div class="section-title"><strong>Despesas por categoria</strong></div>
     <section class="list">${reportRows(byCategoryOut, "despesas") || `<div class="empty">Sem despesas no período.</div>`}</section>
-    <div class="section-title"><strong>Por motorista</strong></div>
-    <section class="list">
-      ${
-        byDriver
-          .map((row) => {
-            const saldo = row.receitas - row.despesas;
-            return `
-              <div class="report-row">
-                <header>
-                  <span>${row.label}</span>
-                  <strong class="amount ${saldo >= 0 ? "in" : "out"}">${formatMoney(saldo)}</strong>
-                </header>
-                <p class="muted">${formatMoney(row.receitas)} · ${formatMoney(row.despesas)}</p>
-              </div>`;
-          })
-          .join("") || `<div class="empty">Sem dados de motoristas.</div>`
-      }
-    </section>
   `;
 }
 
@@ -403,7 +317,6 @@ function render() {
   const views = {
     home: renderHome,
     lancamentos: renderLancamentos,
-    motoristas: renderMotoristas,
     relatorio: renderRelatorio,
   };
   document.getElementById("content").innerHTML = views[state.view]();
@@ -427,8 +340,7 @@ function transactionForm(existing) {
   const item = existing || {
     type: "receita",
     amount: "",
-    category: "corridas",
-    driverId: state.user?.driverId || state.drivers[0]?.id || "",
+    category: "frete-caminhao",
     date: todayISO(),
     payment: "pix",
     description: "",
@@ -448,12 +360,6 @@ function transactionForm(existing) {
       <label class="field">
         <span>Categoria</span>
         <select name="category">${categoryOptions(item.type, item.category)}</select>
-      </label>
-      <label class="field">
-        <span>Motorista</span>
-        <select name="driverId" ${isAdmin() ? "" : "disabled"}>
-          ${state.drivers.map((driver) => `<option value="${driver.id}" ${driver.id === item.driverId ? "selected" : ""}>${driver.name}</option>`).join("")}
-        </select>
       </label>
       <label class="field">
         <span>Data</span>
@@ -489,10 +395,6 @@ function transactionForm(existing) {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!state.drivers.length) {
-      toast("Cadastre um motorista primeiro.");
-      return;
-    }
     const amount = parseAmount(form.amount.value);
     if (!amount || amount <= 0) {
       toast("Informe um valor válido.");
@@ -503,7 +405,6 @@ function transactionForm(existing) {
       type: form.querySelector("#typeToggle .is-active").dataset.type,
       amount,
       category: form.category.value,
-      driverId: form.driverId.value,
       date: form.date.value,
       payment: form.payment.value,
       description: form.description.value.trim(),
@@ -530,60 +431,6 @@ function transactionForm(existing) {
       closeSheet();
       render();
       toast("Lançamento excluído.");
-    } catch (error) {
-      toast(error.message);
-    }
-  });
-}
-
-function driverForm(existing) {
-  const item = existing || { name: "", vehicle: "", plate: "" };
-  openSheet(`
-    <form class="form" id="driverForm">
-      <h2>${existing ? "Editar motorista" : "Novo motorista"}</h2>
-      <label class="field"><span>Nome</span><input name="name" value="${item.name}" required maxlength="40" /></label>
-      <label class="field"><span>Veículo</span><input name="vehicle" value="${item.vehicle}" placeholder="Onix 2021" maxlength="40" /></label>
-      <label class="field"><span>Placa</span><input name="plate" value="${item.plate}" placeholder="ABC-1D23" maxlength="10" /></label>
-      <div class="actions">
-        ${existing ? `<button class="btn danger" id="deleteDriverBtn" type="button">Excluir</button>` : `<button class="btn" type="button" id="cancelSheet">Cancelar</button>`}
-        <button class="btn primary" type="submit">Salvar</button>
-      </div>
-    </form>
-  `);
-
-  const form = document.getElementById("driverForm");
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const payload = {
-      name: form.name.value.trim(),
-      vehicle: form.vehicle.value.trim() || "Veículo não informado",
-      plate: form.plate.value.trim().toUpperCase() || "—",
-    };
-    if (!payload.name) {
-      toast("Informe o nome do motorista.");
-      return;
-    }
-    try {
-      if (existing) await api(`/api/drivers/${existing.id}`, { method: "PUT", body: payload });
-      else await api("/api/drivers", { method: "POST", body: payload });
-      applyData(await api("/api/data"));
-      closeSheet();
-      render();
-      toast(existing ? "Motorista atualizado." : "Motorista cadastrado.");
-    } catch (error) {
-      toast(error.message);
-    }
-  });
-
-  document.getElementById("cancelSheet")?.addEventListener("click", closeSheet);
-  document.getElementById("deleteDriverBtn")?.addEventListener("click", async () => {
-    try {
-      await api(`/api/drivers/${existing.id}`, { method: "DELETE" });
-      if (state.driverId === existing.id) state.driverId = "all";
-      applyData(await api("/api/data"));
-      closeSheet();
-      render();
-      toast("Motorista e lançamentos removidos.");
     } catch (error) {
       toast(error.message);
     }
@@ -635,15 +482,6 @@ function bind() {
     }
   });
 
-  document.querySelectorAll(".login__hints [data-fill]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const form = document.getElementById("loginForm");
-      form.username.value = button.dataset.fill;
-      form.password.value = "1234";
-      form.username.focus();
-    });
-  });
-
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     try {
       await api("/api/logout", { method: "POST" });
@@ -658,25 +496,12 @@ function bind() {
 
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      if (tab.dataset.view === "motoristas" && !isAdmin()) return;
       state.view = tab.dataset.view;
       render();
     });
   });
 
   document.getElementById("addBtn").addEventListener("click", () => {
-    if (state.view === "motoristas") {
-      if (!isAdmin()) return;
-      driverForm();
-      return;
-    }
-    if (!state.drivers.length) {
-      state.view = "motoristas";
-      render();
-      driverForm();
-      toast("Cadastre um motorista para lançar valores.");
-      return;
-    }
     transactionForm();
   });
 
@@ -689,16 +514,9 @@ function bind() {
   document.getElementById("sheetBackdrop").addEventListener("click", closeSheet);
 
   document.getElementById("content").addEventListener("click", (event) => {
-    const driverChip = event.target.closest("[data-driver]");
     const typeChip = event.target.closest("[data-type]");
     const editTx = event.target.closest("[data-edit-tx]");
-    const editDriver = event.target.closest("[data-edit-driver]");
-    const addDriver = event.target.closest("#addDriverBtn");
 
-    if (driverChip) {
-      state.driverId = driverChip.dataset.driver;
-      render();
-    }
     if (typeChip) {
       state.typeFilter = typeChip.dataset.type;
       render();
@@ -706,10 +524,6 @@ function bind() {
     if (editTx) {
       transactionForm(state.transactions.find((item) => item.id === editTx.dataset.editTx));
     }
-    if (editDriver && isAdmin()) {
-      driverForm(state.drivers.find((item) => item.id === editDriver.dataset.editDriver));
-    }
-    if (addDriver) driverForm();
   });
 
   document.getElementById("content").addEventListener("input", (event) => {

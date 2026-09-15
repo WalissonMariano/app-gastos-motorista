@@ -1,20 +1,21 @@
 :root {
-  --bg: #ffffff;
+  --bg: #f7f8fa;
   --bg-soft: #ffffff;
   --surface: #ffffff;
-  --surface-2: #eaf6fc;
-  --line: #c9e6f5;
-  --text: #1a3a52;
-  --muted: #5d7d94;
-  --blue: #4bb4e6;
-  --blue-strong: #2d9fd4;
-  --blue-dim: #eaf6fc;
-  --green: #2d9fd4;
-  --green-dim: #eaf6fc;
-  --red: #e15b5b;
+  --surface-2: #eef1f5;
+  --line: #d5dbe3;
+  --text: #10253d;
+  --muted: #5a6b7d;
+  --navy: #10253d;
+  --navy-strong: #0c1c2e;
+  --navy-dim: #e8edf2;
+  --accent: #ffb511;
+  --accent-strong: #e6a200;
+  --accent-dim: #fff4d6;
+  --green: #1f7a4d;
+  --green-dim: #e6f5ee;
+  --red: #c94444;
   --red-dim: #fdecec;
-  --gold: #2d9fd4;
-  --gold-dim: #eaf6fc;
   --radius: 18px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -30,7 +31,7 @@
 html,
 body {
   min-height: 100%;
-  background: #ffffff;
+  background: var(--bg);
 }
 
 body {
@@ -57,7 +58,7 @@ button {
   min-height: 100dvh;
   max-width: 480px;
   margin: 0 auto;
-  background: #ffffff;
+  background: var(--bg-soft);
   position: relative;
   overflow: hidden;
 }
@@ -71,7 +72,7 @@ button {
   justify-content: space-between;
   gap: 12px;
   padding: calc(14px + var(--safe-top)) 16px 12px;
-  background: #ffffff;
+  background: var(--bg-soft);
   border-bottom: 1px solid var(--line);
 }
 
@@ -82,16 +83,12 @@ button {
   min-width: 0;
 }
 
-.logo {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: var(--blue);
-  color: #ffffff;
-  font-weight: 800;
+.topbar__logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
   flex-shrink: 0;
+  border-radius: 10px;
 }
 
 .eyebrow {
@@ -102,6 +99,7 @@ button {
 .topbar h1 {
   font-size: 20px;
   letter-spacing: -0.03em;
+  color: var(--navy);
 }
 
 .topbar__actions {
@@ -116,34 +114,32 @@ button {
   display: grid;
   align-content: center;
   gap: 22px;
+  background: var(--bg);
 }
 
 .login__brand {
   text-align: center;
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.login__brand .logo {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  font-size: 28px;
-}
-
-.login__brand h1 {
-  font-size: 28px;
-  letter-spacing: -0.04em;
+.login__logo {
+  width: min(220px, 70vw);
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .login__brand p,
-.login__hints p {
+.login__hint {
   color: var(--muted);
+  font-size: 14px;
+  text-align: center;
 }
 
 .login__form {
-  background: var(--surface-2);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 16px;
@@ -151,21 +147,6 @@ button {
 
 .login__error {
   color: var(--red);
-  font-size: 13px;
-}
-
-.login__hints {
-  display: grid;
-  gap: 8px;
-}
-
-.login__hints button {
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  color: var(--text);
   font-size: 13px;
 }
 
@@ -177,11 +158,6 @@ button {
   display: none;
 }
 
-.tab.is-hidden {
-  visibility: hidden;
-  pointer-events: none;
-}
-
 .icon-btn,
 .chip,
 .btn {
@@ -191,9 +167,9 @@ button {
 .icon-btn {
   padding: 0 12px;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--line);
-  color: var(--text);
+  color: var(--navy);
   font-size: 13px;
   font-weight: 600;
 }
@@ -202,13 +178,14 @@ button {
   padding: 8px 16px var(--tabbar);
   display: grid;
   gap: 14px;
+  background: var(--bg);
 }
 
 .hero,
 .card,
 .list,
 .form-card {
-  background: var(--surface-2);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
@@ -236,6 +213,7 @@ button {
   font-size: 34px;
   font-weight: 750;
   letter-spacing: -0.04em;
+  color: var(--navy);
 }
 
 .balance.is-neg {
@@ -255,7 +233,7 @@ button {
   flex: 1 1 140px;
   padding: 12px;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--navy-dim);
 }
 
 .kpi strong {
@@ -265,8 +243,8 @@ button {
 }
 
 .kpi.is-in {
-  background: #ffffff;
-  color: var(--blue-strong);
+  background: var(--accent-dim);
+  color: var(--navy);
 }
 
 .kpi.is-out {
@@ -277,16 +255,16 @@ button {
 .chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--line);
   color: var(--muted);
   font-size: 13px;
 }
 
 .chip.is-active {
-  border-color: var(--blue);
-  color: var(--blue-strong);
-  background: var(--blue-dim);
+  border-color: var(--accent);
+  color: var(--navy);
+  background: var(--accent-dim);
 }
 
 .section-title {
@@ -294,6 +272,7 @@ button {
   align-items: center;
   justify-content: space-between;
   font-size: 15px;
+  color: var(--navy);
 }
 
 .list {
@@ -326,17 +305,16 @@ button {
   display: grid;
   place-items: center;
   font-size: 18px;
-  background: #ffffff;
+  background: var(--navy-dim);
 }
 
-.item h3,
-.driver-card h3 {
+.item h3 {
   font-size: 15px;
   font-weight: 650;
+  color: var(--navy);
 }
 
-.item p,
-.driver-card p {
+.item p {
   color: var(--muted);
   font-size: 12px;
   margin-top: 2px;
@@ -348,7 +326,7 @@ button {
 }
 
 .amount.in {
-  color: var(--blue-strong);
+  color: var(--green);
 }
 
 .amount.out {
@@ -368,11 +346,11 @@ button {
   transform: translateX(-50%);
   width: min(480px, 100%);
   display: grid;
-  grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+  grid-template-columns: 1fr 1fr 64px 1fr;
   align-items: end;
   gap: 4px;
   padding: 8px 10px calc(10px + var(--safe-bottom));
-  background: #ffffff;
+  background: var(--bg-soft);
   border-top: 1px solid var(--line);
   z-index: 30;
 }
@@ -398,7 +376,7 @@ button {
 }
 
 .tab.is-active {
-  color: var(--blue-strong);
+  color: var(--navy);
 }
 
 .fab {
@@ -406,10 +384,11 @@ button {
   height: 56px;
   margin: -22px auto 0;
   border-radius: 50%;
-  background: var(--blue);
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--navy);
   display: grid;
   place-items: center;
+  box-shadow: 0 6px 16px rgba(16, 37, 61, 0.18);
 }
 
 .sheet[hidden] {
@@ -425,7 +404,7 @@ button {
 .sheet__backdrop {
   position: absolute;
   inset: 0;
-  background: #8fb8cc;
+  background: rgba(16, 37, 61, 0.45);
 }
 
 .sheet__panel {
@@ -457,6 +436,7 @@ button {
 
 .form h2 {
   font-size: 20px;
+  color: var(--navy);
 }
 
 .field {
@@ -500,9 +480,9 @@ button {
 }
 
 .toggle button.is-in.is-active {
-  background: var(--blue-dim);
-  border-color: var(--blue);
-  color: var(--blue-strong);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--navy);
 }
 
 .toggle button.is-out.is-active {
@@ -523,11 +503,12 @@ button {
   padding: 12px;
   font-weight: 700;
   background: var(--surface-2);
+  color: var(--navy);
 }
 
 .btn.primary {
-  background: var(--blue);
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--navy);
 }
 
 .btn.danger {
@@ -539,46 +520,17 @@ button {
   grid-column: 1 / -1;
 }
 
-.driver-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.driver-card {
-  padding: 14px;
-  display: grid;
-  gap: 8px;
-  text-align: left;
-}
-
-.driver-card__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  background: var(--gold-dim);
-  color: var(--gold);
-}
-
 .bar {
   height: 8px;
   border-radius: 99px;
-  background: #eaf6fc;
+  background: var(--navy-dim);
   overflow: hidden;
 }
 
 .bar > span {
   display: block;
   height: 100%;
-  background: var(--blue);
+  background: var(--accent);
 }
 
 .bar.out > span {
@@ -601,14 +553,7 @@ button {
   justify-content: space-between;
   gap: 8px;
   font-size: 14px;
-}
-
-.banner {
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: var(--blue-dim);
-  color: var(--blue-strong);
-  font-size: 13px;
+  color: var(--navy);
 }
 
 .search {
@@ -627,7 +572,7 @@ button {
   bottom: calc(var(--tabbar) + 10px);
   transform: translateX(-50%) translateY(20px);
   width: min(420px, calc(100% - 24px));
-  background: var(--blue);
+  background: var(--navy);
   color: #ffffff;
   padding: 12px 14px;
   border-radius: 14px;

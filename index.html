@@ -6,52 +6,51 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#10253D" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta
       name="description"
-      content="Controle de receitas e despesas dos motoristas"
+      content="Controle de receitas e despesas do motorista"
     />
-    <title>Giro — Caixa do motorista</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%234bb4e6'/><text x='32' y='42' text-anchor='middle' font-size='32' font-family='Arial' fill='%23ffffff'>G</text></svg>" />
+    <title>Gastos do Motorista</title>
+    <link rel="icon" href="/assets/logo.png" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div class="app" id="app">
       <section class="login" id="loginScreen">
         <div class="login__brand">
-          <span class="logo" aria-hidden="true">G</span>
-          <h1>Giro</h1>
-          <p>Entre para registrar o caixa da frota</p>
+          <img
+            class="login__logo"
+            src="/assets/logo.png"
+            alt="Gastos do Motorista"
+            width="220"
+            height="220"
+          />
+          <p>Entre para registrar seu caixa</p>
         </div>
         <form class="form login__form" id="loginForm">
           <label class="field">
             <span>Usuário</span>
-            <input name="username" autocomplete="username" placeholder="admin" required />
+            <input name="username" autocomplete="username" placeholder="motorista" required />
           </label>
           <label class="field">
             <span>Senha</span>
-            <input name="password" type="password" autocomplete="current-password" placeholder="1234" required />
+            <input name="password" type="password" autocomplete="current-password" placeholder="••••" required />
           </label>
           <p class="login__error" id="loginError" hidden></p>
           <button class="btn primary full" type="submit">Entrar</button>
         </form>
-        <div class="login__hints">
-          <p>Contas de demonstração</p>
-          <button type="button" data-fill="admin">admin / 1234 — frota</button>
-          <button type="button" data-fill="carlos">carlos / 1234 — motorista</button>
-          <button type="button" data-fill="ana">ana / 1234 — motorista</button>
-          <button type="button" data-fill="joao">joao / 1234 — motorista</button>
-        </div>
+        <p class="login__hint">Acesso: motorista / 1234</p>
       </section>
 
       <div id="workspace" hidden>
         <header class="topbar">
           <div class="topbar__brand">
-            <span class="logo" aria-hidden="true">G</span>
+            <img class="topbar__logo" src="/assets/logo.png" alt="" width="40" height="40" />
             <div>
-              <p class="eyebrow" id="headerEyebrow">Giro</p>
+              <p class="eyebrow" id="headerEyebrow">Gastos do Motorista</p>
               <h1 id="headerTitle">Início</h1>
             </div>
           </div>
@@ -76,10 +75,6 @@
           </button>
           <button class="fab" id="addBtn" type="button" aria-label="Novo lançamento">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-          <button class="tab" data-view="motoristas" id="driversTab" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zm8 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM3.5 20a4.5 4.5 0 0 1 9 0v1h-9zm10.2 1v-1a4.2 4.2 0 0 1 3.3-4.1A4.8 4.8 0 0 1 20.5 20v1z"/></svg>
-            Motoristas
           </button>
           <button class="tab" data-view="relatorio" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9h3v10zm6 0V5h3v14zm6 0v-7h3v7z"/></svg>

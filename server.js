@@ -12,6 +12,12 @@ const MIME = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".webp": "image/webp",
+  ".ico": "image/x-icon",
 };
 
 function readJson(file) {
@@ -27,8 +33,6 @@ function publicUser(user) {
     id: user.id,
     name: user.name,
     username: user.username,
-    role: user.role,
-    driverId: user.driverId || null,
   };
 }
 
@@ -89,26 +93,22 @@ function currentUser(req) {
   return user || null;
 }
 
-function scopedData(user) {
-  const drivers = readJson("drivers.json");
-  const transactions = readJson("transactions.json");
-  if (user.role === "admin") {
-    return { user: publicUser(user), drivers, transactions };
-  }
+function sessionData(user) {
   return {
     user: publicUser(user),
-    drivers: drivers.filter((item) => item.id === user.driverId),
-    transactions: transactions.filter((item) => item.driverId === user.driverId),
+    transactions: readJson("transactions.json"),
   };
-}
-
-function canAccessDriver(user, driverId) {
-  return user.role === "admin" || user.driverId === driverId;
 }
 
 function serveStatic(req, res, urlPath) {
   const safePath = urlPath === "/" ? "/index.html" : urlPath;
-  if (!safePath.startsWith("/css/") && !safePath.startsWith("/js/") && safePath !== "/index.html") {
+  const allowed =
+    safePath.startsWith("/css/") ||
+    safePath.startsWith("/js/") ||
+    safePath.startsWith("/assets/") ||
+    safePath === "/index.html";
+
+  if (!allowed) {
     res.writeHead(404);
     res.end("Not found");
     return;
@@ -127,7 +127,7 @@ function serveStatic(req, res, urlPath) {
       res.end("Not found");
       return;
     }
-    res.writeHead(200, { "Content-Type": MIME[path.extname(filePath)] || "text/plain" });
+    res.writeHead(200, { "Content-Type": MIME[path.extname(filePath)] || "application/octet-stream" });
     res.end(data);
   });
 }
@@ -154,7 +154,7 @@ async function handleApi(req, res, url) {
       expiresAt: Date.now() + SESSION_MS,
     });
     saveSessions(sessions);
-    send(res, 200, { token, ...scopedData(user) });
+    send(res, 200, { token, ...sessionData(user) });
     return;
   }
 
@@ -172,81 +172,14 @@ async function handleApi(req, res, url) {
   }
 
   if (route === "GET /api/data") {
-    send(res, 200, scopedData(user));
-    return;
-  }
-
-  if (route === "POST /api/drivers") {
-    if (user.role !== "admin") {
-      send(res, 403, { error: "Apenas o administrador cadastra motoristas." });
-      return;
-    }
-    const body = await readBody(req);
-    const drivers = readJson("drivers.json");
-    const driver = {
-      id: body.id || `drv-${crypto.randomBytes(4).toString("hex")}`,
-      name: String(body.name || "").trim(),
-      vehicle: String(body.vehicle || "").trim() || "Veículo não informado",
-      plate: String(body.plate || "").trim().toUpperCase() || "—",
-    };
-    if (!driver.name) {
-      send(res, 400, { error: "Informe o nome do motorista." });
-      return;
-    }
-    drivers.push(driver);
-    writeJson("drivers.json", drivers);
-    send(res, 201, driver);
-    return;
-  }
-
-  const driverMatch = url.pathname.match(/^\/api\/drivers\/([^/]+)$/);
-  if (driverMatch && (req.method === "PUT" || req.method === "DELETE")) {
-    if (user.role !== "admin") {
-      send(res, 403, { error: "Apenas o administrador altera motoristas." });
-      return;
-    }
-    const id = decodeURIComponent(driverMatch[1]);
-    let drivers = readJson("drivers.json");
-    if (!drivers.some((item) => item.id === id)) {
-      send(res, 404, { error: "Motorista não encontrado." });
-      return;
-    }
-    if (req.method === "DELETE") {
-      drivers = drivers.filter((item) => item.id !== id);
-      writeJson("drivers.json", drivers);
-      writeJson(
-        "transactions.json",
-        readJson("transactions.json").filter((item) => item.driverId !== id)
-      );
-      send(res, 200, { ok: true });
-      return;
-    }
-    const body = await readBody(req);
-    drivers = drivers.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            name: String(body.name || "").trim() || item.name,
-            vehicle: String(body.vehicle || "").trim() || item.vehicle,
-            plate: String(body.plate || "").trim().toUpperCase() || item.plate,
-          }
-        : item
-    );
-    writeJson("drivers.json", drivers);
-    send(res, 200, drivers.find((item) => item.id === id));
+    send(res, 200, sessionData(user));
     return;
   }
 
   if (route === "POST /api/transactions") {
     const body = await readBody(req);
-    const driverId = user.role === "admin" ? body.driverId : user.driverId;
-    if (!canAccessDriver(user, driverId)) {
-      send(res, 403, { error: "Sem permissão para este motorista." });
-      return;
-    }
     const transaction = {
       id: body.id || `tx-${crypto.randomBytes(4).toString("hex")}`,
-      driverId,
       type: body.type === "despesa" ? "despesa" : "receita",
       category: String(body.category || ""),
       amount: Number(body.amount),
@@ -275,10 +208,6 @@ async function handleApi(req, res, url) {
       send(res, 404, { error: "Lançamento não encontrado." });
       return;
     }
-    if (!canAccessDriver(user, current.driverId)) {
-      send(res, 403, { error: "Sem permissão para este lançamento." });
-      return;
-    }
     if (req.method === "DELETE") {
       writeJson(
         "transactions.json",
@@ -288,14 +217,8 @@ async function handleApi(req, res, url) {
       return;
     }
     const body = await readBody(req);
-    const driverId = user.role === "admin" ? body.driverId || current.driverId : current.driverId;
-    if (!canAccessDriver(user, driverId)) {
-      send(res, 403, { error: "Sem permissão para este motorista." });
-      return;
-    }
     const updated = {
       ...current,
-      driverId,
       type: body.type === "despesa" ? "despesa" : "receita",
       category: String(body.category || current.category),
       amount: Number(body.amount),
@@ -330,5 +253,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Giro disponível em http://localhost:${PORT}`);
+  console.log(`Gastos do Motorista em http://localhost:${PORT}`);
 });
