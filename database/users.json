@@ -1,0 +1,33 @@
+[
+  {
+    "id": "usr-admin",
+    "name": "Administrador",
+    "username": "admin",
+    "password": "1234",
+    "role": "admin"
+  },
+  {
+    "id": "usr-carlos",
+    "name": "Carlos Mendes",
+    "username": "carlos",
+    "password": "1234",
+    "role": "motorista",
+    "driverId": "drv-carlos"
+  },
+  {
+    "id": "usr-ana",
+    "name": "Ana Souza",
+    "username": "ana",
+    "password": "1234",
+    "role": "motorista",
+    "driverId": "drv-ana"
+  },
+  {
+    "id": "usr-joao",
+    "name": "João Lima",
+    "username": "joao",
+    "password": "1234",
+    "role": "motorista",
+    "driverId": "drv-joao"
+  }
+]

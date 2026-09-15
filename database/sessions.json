@@ -1,0 +1,12 @@
+[
+  {
+    "token": "2d5757051e4ed9f950509a06c31122f71770ef9eb67c5294",
+    "userId": "usr-carlos",
+    "expiresAt": 1789406919353
+  },
+  {
+    "token": "4718db5cca36245af04333e3e40ebb995bb0d7dc48669fbd",
+    "userId": "usr-admin",
+    "expiresAt": 1789407108193
+  }
+]

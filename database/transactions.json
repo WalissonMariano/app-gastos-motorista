@@ -1,0 +1,167 @@
+[
+  {
+    "id": "tx-demo-0",
+    "driverId": "drv-carlos",
+    "type": "receita",
+    "category": "corridas",
+    "amount": 286.4,
+    "date": "2026-09-13",
+    "payment": "pix",
+    "description": "Turno manhã — app",
+    "createdAt": 1757779200000
+  },
+  {
+    "id": "tx-demo-1",
+    "driverId": "drv-carlos",
+    "type": "despesa",
+    "category": "combustivel",
+    "amount": 120,
+    "date": "2026-09-13",
+    "payment": "dinheiro",
+    "description": "Gasolina posto Shell",
+    "createdAt": 1757779100000
+  },
+  {
+    "id": "tx-demo-2",
+    "driverId": "drv-ana",
+    "type": "receita",
+    "category": "entregas",
+    "amount": 154.9,
+    "date": "2026-09-13",
+    "payment": "pix",
+    "description": "iFood + Rappi",
+    "createdAt": 1757779000000
+  },
+  {
+    "id": "tx-demo-3",
+    "driverId": "drv-joao",
+    "type": "receita",
+    "category": "frete",
+    "amount": 320,
+    "date": "2026-09-12",
+    "payment": "pix",
+    "description": "Entrega de móveis",
+    "createdAt": 1757692800000
+  },
+  {
+    "id": "tx-demo-4",
+    "driverId": "drv-joao",
+    "type": "despesa",
+    "category": "pedagio",
+    "amount": 28.6,
+    "date": "2026-09-12",
+    "payment": "dinheiro",
+    "description": "Rodovia Anhanguera",
+    "createdAt": 1757692700000
+  },
+  {
+    "id": "tx-demo-5",
+    "driverId": "drv-ana",
+    "type": "receita",
+    "category": "corridas",
+    "amount": 198.5,
+    "date": "2026-09-12",
+    "payment": "pix",
+    "description": "99 Pop",
+    "createdAt": 1757692600000
+  },
+  {
+    "id": "tx-demo-6",
+    "driverId": "drv-carlos",
+    "type": "despesa",
+    "category": "alimentacao",
+    "amount": 32,
+    "date": "2026-09-11",
+    "payment": "dinheiro",
+    "description": "Almoço na estrada",
+    "createdAt": 1757606400000
+  },
+  {
+    "id": "tx-demo-7",
+    "driverId": "drv-carlos",
+    "type": "receita",
+    "category": "gorjeta",
+    "amount": 20,
+    "date": "2026-09-11",
+    "payment": "pix",
+    "description": "Cliente do aeroporto",
+    "createdAt": 1757606300000
+  },
+  {
+    "id": "tx-demo-8",
+    "driverId": "drv-ana",
+    "type": "despesa",
+    "category": "lavagem",
+    "amount": 40,
+    "date": "2026-09-10",
+    "payment": "dinheiro",
+    "description": "Lava-rápido centro",
+    "createdAt": 1757520000000
+  },
+  {
+    "id": "tx-demo-9",
+    "driverId": "drv-joao",
+    "type": "despesa",
+    "category": "manutencao",
+    "amount": 180,
+    "date": "2026-09-09",
+    "payment": "dinheiro",
+    "description": "Troca de óleo",
+    "createdAt": 1757433600000
+  },
+  {
+    "id": "tx-demo-10",
+    "driverId": "drv-ana",
+    "type": "receita",
+    "category": "entregas",
+    "amount": 132,
+    "date": "2026-09-09",
+    "payment": "pix",
+    "description": "Turno da noite",
+    "createdAt": 1757433500000
+  },
+  {
+    "id": "tx-demo-11",
+    "driverId": "drv-carlos",
+    "type": "receita",
+    "category": "corridas",
+    "amount": 247.8,
+    "date": "2026-09-08",
+    "payment": "pix",
+    "description": "Uber X",
+    "createdAt": 1757347200000
+  },
+  {
+    "id": "tx-demo-12",
+    "driverId": "drv-joao",
+    "type": "receita",
+    "category": "frete",
+    "amount": 410,
+    "date": "2026-09-07",
+    "payment": "pix",
+    "description": "Coleta intermunicipal",
+    "createdAt": 1757260800000
+  },
+  {
+    "id": "tx-demo-13",
+    "driverId": "drv-carlos",
+    "type": "despesa",
+    "category": "estacionamento",
+    "amount": 15,
+    "date": "2026-09-07",
+    "payment": "dinheiro",
+    "description": "Shopping",
+    "createdAt": 1757260700000
+  },
+  {
+    "id": "tx-demo-14",
+    "driverId": "drv-ana",
+    "type": "despesa",
+    "category": "combustivel",
+    "amount": 95,
+    "date": "2026-09-06",
+    "payment": "dinheiro",
+    "description": "Etanol",
+    "createdAt": 1757174400000
+  }
+]
