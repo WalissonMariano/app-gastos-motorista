@@ -2,6 +2,8 @@
 
 App mobile-first para o motorista controlar **receitas e despesas** de fretes (caminhão e Fiorino).
 
+**Login:** usuário `motorista` · senha `1234`
+
 ## Funcionalidades
 
 ### Login e sessão
